@@ -12,8 +12,10 @@ class Recipe extends Model
      * @var list<string>
      */
     protected $fillable = [
+        'user_id',
         'privacy',
         'title',
+        'description',
         'ingredients',
         'directions',
         'photo_path',

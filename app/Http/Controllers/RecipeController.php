@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Recipe;
 use Illuminate\Http\Request;
+use Illuminate\Routing\Controller;
+use Illuminate\Support\Facades\Auth;
 
 class RecipeController extends Controller
 {
@@ -28,7 +30,29 @@ class RecipeController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $validated = $request->validate([
+            'privacy' => 'required|in:private,public',
+            'title' => 'required|string|max:255',
+            'ingredients' => 'required|string',
+            'directions' => 'required|string',
+            'photo_path' => 'nullable|image|mimes:jpg,jpeg,webp,png|max:2048',
+        ]);
+
+        $photoPath = null;
+        if ($request->hasFile('photo_path')) {
+            $photoPath = $request->file('photo_path')->store('photos', 'public');
+        }
+
+        $recipe = Recipe::create([
+            'user_id' => Auth::id(),
+            'privacy' => $validated['privacy'],
+            'title' => $validated['title'],
+            'ingredients' => $validated['ingredients'],
+            'directions' => $validated['directions'],
+            'photo_path' => $photoPath,
+        ]);
+
+        return redirect()->route('home')->with('success', 'Resep berhasil dibuat!');
     }
 
     /**
@@ -44,7 +68,11 @@ class RecipeController extends Controller
      */
     public function edit(Recipe $resep)
     {
-        return view('recipe.edit');
+        $user = Auth::user();
+        if (!$user || $user->id != $resep->user_id) {
+            abort(403, 'Unauthorized');
+        }
+        return view('recipe.edit', compact('resep'));
     }
 
     /**
@@ -52,7 +80,31 @@ class RecipeController extends Controller
      */
     public function update(Request $request, Recipe $resep)
     {
-        //
+        $user = Auth::user();
+        if (!$user || $user->id != $resep->user_id) {
+            abort(403, 'Unauthorized');
+        }
+
+        $validated = $request->validate([
+            'privacy' => 'required|in:private,public',
+            'title' => 'required|string|max:255',
+            'ingredients' => 'required|string',
+            'directions' => 'required|string',
+            'photo_path' => 'nullable|image|mimes:jpg,jpeg,webp,png|max:2048',
+        ]);
+
+        if ($request->hasFile('photo_path')) {
+            $photoPath = $request->file('photo_path')->store('photos', 'public');
+            $resep->photo_path = $photoPath;
+        }
+
+        $resep->privacy = $validated['privacy'];
+        $resep->title = $validated['title'];
+        $resep->ingredients = $validated['ingredients'];
+        $resep->directions = $validated['directions'];
+        $resep->save();
+
+        return redirect()->route('home')->with('success', 'Resep berhasil diupdate!');
     }
 
     /**

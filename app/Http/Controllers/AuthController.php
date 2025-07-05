@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 
@@ -56,5 +57,22 @@ class AuthController extends Controller
         $request->session()->invalidate();
         $request->session()->regenerateToken();
         return redirect('/login');
+    }
+    
+    /**
+     * Update the user's photo.
+     */
+    public function updatePhoto(Request $request)
+    {
+        $user = Auth::user();
+        $request->validate([
+            'photo' => 'required|image|mimes:jpg,jpeg,png,webp|max:2048',
+        ]);
+
+        $photoPath = $request->file('photo')->store('user_photos', 'public');
+        $user->photo_path = $photoPath;
+        $user->save();
+
+        return redirect()->back()->with('success', 'Foto profil berhasil diupdate!');
     }
 }

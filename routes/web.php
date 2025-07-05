@@ -19,7 +19,7 @@ Route::middleware('auth')->group(function () {
         return view('home');
     });
 
-    Route::get('/create', [RecipeController::class, 'create'])->name('createRecipe');
+    Route::resource('recipes', RecipeController::class);
 
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 });
