@@ -11,3 +11,63 @@
     --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
         'Segoe UI Symbol', 'Noto Color Emoji';
 }
+
+@layer utilities {
+  .drop-shadow-primary {
+    filter: drop-shadow(0 2px 4px '#10b981');
+  }
+  /* Slide-in Animations */
+  @keyframes slide-in-up {
+    0% {
+      opacity: 0;
+      transform: translateY(40px);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  @keyframes slide-in-down {
+    0% {
+      opacity: 0;
+      transform: translateY(-40px);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  @keyframes slide-in-left {
+    0% {
+      opacity: 0;
+      transform: translateX(-40px);
+    }
+    100% {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+  @keyframes slide-in-right {
+    0% {
+      opacity: 0;
+      transform: translateX(40px);
+    }
+    100% {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+
+  .slide-in-up {
+    animation: slide-in-up 0.5s cubic-bezier(0.4,0,0.2,1) both;
+  }
+  .slide-in-down {
+    animation: slide-in-down 0.5s cubic-bezier(0.4,0,0.2,1) both;
+  }
+  .slide-in-left {
+    animation: slide-in-left 0.5s cubic-bezier(0.4,0,0.2,1) both;
+  }
+  .slide-in-right {
+    animation: slide-in-right 0.5s cubic-bezier(0.4,0,0.2,1) both;
+  }
+}

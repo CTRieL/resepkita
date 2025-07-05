@@ -19,7 +19,10 @@ Route::middleware('auth')->group(function () {
         return view('home');
     });
 
-    Route::resource('recipes', RecipeController::class);
+    Route::resource('/recipes', RecipeController::class);
+
+    Route::get('/profile', [AuthController::class, 'show'])->name('profile');
+    Route::post('/profile/photo', [AuthController::class, 'updatePhoto'])->name('profile.photo');
 
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 });

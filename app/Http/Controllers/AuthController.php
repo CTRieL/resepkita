@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Recipe;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
@@ -57,6 +58,12 @@ class AuthController extends Controller
         $request->session()->invalidate();
         $request->session()->regenerateToken();
         return redirect('/login');
+    }
+
+    public function show() {
+        $userId = Auth::id();
+        $userRecipes = Recipe::where('user_id', $userId)->orderByDesc('created_at')->get();
+        return view('profile', compact('userRecipes'));
     }
     
     /**
