@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\RecipeController;
 use Illuminate\Support\Facades\Route;
 
 // Route::get('/', function () {
@@ -17,6 +18,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/home', function () {
         return view('home');
     });
+
+    Route::get('/create', [RecipeController::class, 'create'])->name('createRecipe');
 
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 });
