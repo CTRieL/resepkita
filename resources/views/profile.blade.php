@@ -23,6 +23,12 @@ $user = auth()->user()
                 </button>
             </div>
             <label class="font-bold text-2xl text-gray-800 ">{{ $user['name'] }}</label>
+            <form method="POST" action="{{ route('logout') }}" class="mt-10">
+                @csrf
+                <button type="submit" class="text-base text-danger w-full h-10 bg-danger/5 border-[1px] border-danger text-center rounded-xl hover:bg-danger/10 active:border-[2px]">
+                    Logout
+                </button>
+            </form>
         </div>
         <div class="col-span-3 flex flex-col gap-4">
             @if($userRecipes && $userRecipes->isNotEmpty())
@@ -30,7 +36,7 @@ $user = auth()->user()
                 <h2 class="text-gray-600 font-semibold text-lg">Resepku:</h2>
                 <button class="w-full h-[80px] flex items-center justify-center rounded-xl border-[3px] border-dashed border-primary text-primary hover:bg-primary/5 active:bg-primary/10">
                     <svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="currentColor"><path d="M440-120v-320H120v-80h320v-320h80v320h320v80H520v320h-80Z"/></svg>
-                    <p class="font-semibold text-lg">Tambah Resep</p>
+                    <p class="font-semibold text-lg"> Upload Resep</p>
                 </button>
                 
                 @foreach($userRecipes as $recipe)
@@ -41,9 +47,9 @@ $user = auth()->user()
                 @endforeach
             @else   
                 <p class="w-full text-center text-gray-600 text-lg">Kamu belum pernah buat resep nih. Ayo buat sekarang!</p>
-                <button class="w-full h-[80px] flex items-center justify-center rounded-xl border-[3px] border-dashed border-primary text-primary hover:bg-primary/5 active:bg-primary/10">
+                <button onclick="window.location.href='{{ route('recipe.create') }}'" class="w-full h-[80px] flex items-center justify-center rounded-xl border-[3px] border-dashed border-primary text-primary hover:bg-primary/5 active:bg-primary/10">
                     <svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="currentColor"><path d="M440-120v-320H120v-80h320v-320h80v320h320v80H520v320h-80Z"/></svg>
-                    <p class="font-semibold text-lg">Tambah Resep</p>
+                    <p class="font-semibold text-lg"> Upload Resep</p>
                 </button>
             @endif
         </div>
@@ -55,8 +61,8 @@ $user = auth()->user()
 <form method="POST" action="{{ route('profile.photo') }}" enctype="multipart/form-data" class="bg-white rounded-lg shadow-lg p-8 min-w-[320px] relative">
     @csrf
     <h2 class="text-xl font-bold mb-4">Ubah Foto Profil</h2>
-    <div class="col-span-full mb-4 w-[400px]">
-        <label for="cover-photo" class="block text-sm/6 font-medium text-gray-900">Cover photo</label>
+    <div class="col-span-full w-[400px]">
+        <label for="cover-photo" class="block text-sm/6 text-gray-900">Masukkan foto profil yang baru</label>
         <div id="drop-area" class="mt-2 flex justify-center rounded-lg border border-dashed border-gray-900/25 px-6 py-10 transition-colors duration-200">
             <div class="text-center">
                 <div id="photo-preview">
@@ -65,63 +71,17 @@ $user = auth()->user()
                     </svg>
                 </div>
                 <div class="mt-4 flex text-sm/6 text-gray-600 justify-center flex-col">
-                    <div class="mt-4 flex text-sm/6 text-gray-600">
+                    <div class="mt-4 flex justify-center items-center text-sm/6 text-gray-600">
                         <label for="file-upload" class="relative cursor-pointer rounded-md bg-white font-semibold text-primary focus-within:ring-2 focus-within:ring-primaryS-600 focus-within:ring-offset-2 focus-within:outline-hidden hover:text-primaryS-500">
                             <span>Upload a file</span>
                             <input id="file-upload" name="photo" type="file"class="sr-only"  accept=".jpg,.jpeg,.png,.webp" />
                         </label>
                         <p class="pl-1">or drag and drop</p>
                     </div>
-                    <p class="text-xs/5 text-gray-600">PNG, JPG, GIF up to 10MB</p>
+                    <p class="text-xs/5 text-gray-600">PNG, JPG, JPEG up to 2MB</p>
                 </div>
             </div>
         </div>
-</form>
-<script>
-// Drag & drop + preview
-const dropArea = document.getElementById('drop-area');
-const fileInput = document.getElementById('file-upload');
-const preview = document.getElementById('photo-preview');
-
-if (dropArea && fileInput && preview) {
-    // Highlight on drag    
-    ['dragenter', 'dragover'].forEach(eventName => {
-        dropArea.addEventListener(eventName, e => {
-            e.preventDefault();
-            e.stopPropagation();
-            dropArea.classList.add('bg-primary/10');
-        });
-    });
-    ['dragleave', 'drop'].forEach(eventName => {
-        dropArea.addEventListener(eventName, e => {
-            e.preventDefault();
-            e.stopPropagation();
-            dropArea.classList.remove('bg-primary/10');
-        });
-    });
-    // Handle drop
-    dropArea.addEventListener('drop', e => {
-        if (e.dataTransfer.files && e.dataTransfer.files[0]) {
-            fileInput.files = e.dataTransfer.files;
-            showPreview(fileInput.files[0]);
-        }
-    });
-    // Handle file input change
-    fileInput.addEventListener('change', e => {
-        if (fileInput.files && fileInput.files[0]) {
-            showPreview(fileInput.files[0]);
-        }
-    });
-    function showPreview(file) {
-        if (!file.type.startsWith('image/')) return;
-        const reader = new FileReader();
-        reader.onload = function(e) {
-            preview.innerHTML = `<img src="${e.target.result}" alt="Preview" class="mx-auto rounded-lg object-cover max-h-32 max-w-32 border border-gray-200" />`;
-        };
-        reader.readAsDataURL(file);
-    }
-}
-</script>
     <div class="flex gap-4 justify-end mt-4">
         <button type="button" onclick="hidePopup()" class="px-4 py-2 border-[2px] border-gray-400 text-gray-500 rounded-lg hover:bg-gray-200">Cancel</button>
         <button type="submit" class="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/80">Submit</button>

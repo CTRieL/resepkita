@@ -33,26 +33,28 @@ class RecipeController extends Controller
         $validated = $request->validate([
             'privacy' => 'required|in:private,public',
             'title' => 'required|string|max:255',
+            'description' => 'required|string',
             'ingredients' => 'required|string',
             'directions' => 'required|string',
-            'photo_path' => 'nullable|image|mimes:jpg,jpeg,webp,png|max:2048',
+            'photo' => 'nullable|image|mimes:jpg,jpeg,webp,png|max:2048',
         ]);
 
         $photoPath = null;
-        if ($request->hasFile('photo_path')) {
-            $photoPath = $request->file('photo_path')->store('photos', 'public');
+        if ($request->hasFile('photo')) {
+            $photoPath = $request->file('photo')->store('recipe_photos', 'public');
         }
 
         $recipe = Recipe::create([
             'user_id' => Auth::id(),
             'privacy' => $validated['privacy'],
             'title' => $validated['title'],
+            'description' => $validated['description'],
             'ingredients' => $validated['ingredients'],
             'directions' => $validated['directions'],
             'photo_path' => $photoPath,
         ]);
 
-        return redirect()->route('home')->with('success', 'Resep berhasil dibuat!');
+        return redirect()->route('dashboard')->with('success', 'Resep berhasil dibuat!');
     }
 
     /**
@@ -88,23 +90,25 @@ class RecipeController extends Controller
         $validated = $request->validate([
             'privacy' => 'required|in:private,public',
             'title' => 'required|string|max:255',
+            'description' => 'required|string',
             'ingredients' => 'required|string',
             'directions' => 'required|string',
-            'photo_path' => 'nullable|image|mimes:jpg,jpeg,webp,png|max:2048',
+            'photo' => 'nullable|image|mimes:jpg,jpeg,webp,png|max:2048',
         ]);
 
-        if ($request->hasFile('photo_path')) {
-            $photoPath = $request->file('photo_path')->store('photos', 'public');
+        if ($request->hasFile('photo')) {
+            $photoPath = $request->file('photo')->store('recipe_photos', 'public');
             $resep->photo_path = $photoPath;
         }
 
         $resep->privacy = $validated['privacy'];
         $resep->title = $validated['title'];
+        $resep->description = $validated['description'];    
         $resep->ingredients = $validated['ingredients'];
         $resep->directions = $validated['directions'];
         $resep->save();
 
-        return redirect()->route('home')->with('success', 'Resep berhasil diupdate!');
+        return redirect()->route('dashboard')->with('success', 'Resep berhasil diupdate!');
     }
 
     /**
