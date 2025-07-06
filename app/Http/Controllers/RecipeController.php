@@ -6,6 +6,7 @@ use App\Models\Recipe;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 
 class RecipeController extends Controller
 {
@@ -54,36 +55,36 @@ class RecipeController extends Controller
             'photo_path' => $photoPath,
         ]);
 
-        return redirect()->route('dashboard')->with('success', 'Resep berhasil dibuat!');
+        return redirect()->route('profile')->with('success', 'Resep berhasil dibuat!');
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(Recipe $resep)
+    public function show(Recipe $recipe)
     {
-        //
+        return view('recipe.show', compact('recipe'));
     }
 
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Recipe $resep)
+    public function edit(Recipe $recipe)
     {
         $user = Auth::user();
-        if (!$user || $user->id != $resep->user_id) {
+        if (!$user || $user->id != $recipe->user_id) {
             abort(403, 'Unauthorized');
         }
-        return view('recipe.edit', compact('resep'));
+        return view('recipe.edit', compact('recipe'));
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Recipe $resep)
+    public function update(Request $request, Recipe $recipe)
     {
         $user = Auth::user();
-        if (!$user || $user->id != $resep->user_id) {
+        if (!$user || $user->id != $recipe->user_id) {
             abort(403, 'Unauthorized');
         }
 
@@ -98,24 +99,38 @@ class RecipeController extends Controller
 
         if ($request->hasFile('photo')) {
             $photoPath = $request->file('photo')->store('recipe_photos', 'public');
-            $resep->photo_path = $photoPath;
+            $recipe->photo_path = $photoPath;
         }
 
-        $resep->privacy = $validated['privacy'];
-        $resep->title = $validated['title'];
-        $resep->description = $validated['description'];    
-        $resep->ingredients = $validated['ingredients'];
-        $resep->directions = $validated['directions'];
-        $resep->save();
+        $recipe->privacy = $validated['privacy'];
+        $recipe->title = $validated['title'];
+        $recipe->description = $validated['description'];    
+        $recipe->ingredients = $validated['ingredients'];
+        $recipe->directions = $validated['directions'];
+        $recipe->save();
 
-        return redirect()->route('dashboard')->with('success', 'Resep berhasil diupdate!');
+        return redirect()->route('profile')->with('success', 'Resep berhasil diupdate!');
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Recipe $resep)
+    public function destroy(Recipe $recipe)
     {
-        //
+        $user = Auth::user();
+        if (!$user || $user->id != $recipe->user_id) {
+            abort(403, 'Unauthorized');
+        }
+
+        // Hapus semua like resep ini
+        $recipe->likes()->delete();
+
+        // Hapus foto jika ada
+        if ($recipe->photo_path && Storage::disk('public')->exists($recipe->photo_path)) {
+            Storage::disk('public')->delete($recipe->photo_path);
+        }
+
+        $recipe->delete();
+        return redirect()->route('profile')->with('success', 'Resep berhasil dihapus!');
     }
 }

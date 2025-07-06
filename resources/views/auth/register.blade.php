@@ -16,11 +16,16 @@
             </div>
         @endif
 
-        <input name="name" type="text" placeholder="Name" required class="px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/50 text-lg" autocomplete="name">
-        <input name="email" type="email" placeholder="Email" required class="px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/50 text-lg" autocomplete="email">
+        <input name="name" type="text" placeholder="Name" required value="{{ old('name') }}" class="px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/50 text-lg" autocomplete="name">
+
+        <input name="email" type="email" placeholder="Email" required value="{{ old('email') }}" class="px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/50 text-lg" autocomplete="email">
+
         <input name="password" type="password" placeholder="Password" required class="px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/50 text-lg" autocomplete="new-password">
+
         <input name="password_confirmation" type="password" placeholder="Confirm Password" required class="px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/50 text-lg" autocomplete="new-password">
+
         <button type="submit" class="mt-2 bg-primary text-white font-semibold py-3 rounded-xl hover:bg-primary/90 transition">Register</button>
+
         <p class="text-gray-600">Sudah punya akun? Ayo <a href="/login" class="text-primary hover:underline">Login!</a></p>
     </form>
 </div>

@@ -5,7 +5,12 @@
 @section('content')
 <div class="w-full flex justify-center items-center py-8">
     <div class="bg-white rounded-xl shadow-lg p-8 w-full max-w-4xl border border-gray-100">
-        <h2 class="text-xl font-bold text-primary mb-2">Buat Resep Baru</h2>
+        <div class="flex gap-2 items-center">
+            <button onclick="history.back()" class="text-gray-600 border-[1px] border-gray-400 rounded-lg w-6 h-6 mb-1 flex items-center justify-end hover:bg-gray-200">
+                <svg xmlns="http://www.w3.org/2000/svg" height="16px" viewBox="0 -960 960 960" width="16px" fill="#999999"><path d="M400-80 0-480l400-400 71 71-329 329 329 329-71 71Z"/></svg>
+            </button>
+            <h2 class="text-2xl font-bold text-primary mb-2">Buat Resep Baru</h2>
+        </div>
         @if($errors->any())
             <div class="bg-danger/10 text-danger px-4 py-2 rounded mb-2 text-center border border-danger">
                 <div class="list-disc list-inside text-center inline-block">
@@ -14,7 +19,7 @@
                     @endforeach
                 </div>
             </div>
-        @endif
+        @endif  
         <form method="POST" action="{{ route('recipe.store') }}" enctype="multipart/form-data" class="grid grid-cols-5 gap-8">
             @csrf
             <div class="col-span-2 flex flex-col gap-4">

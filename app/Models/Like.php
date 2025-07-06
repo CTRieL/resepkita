@@ -7,8 +7,18 @@ use Illuminate\Database\Eloquent\Model;
 class Like extends Model
 {
     protected $fillable = [
-            'recipe_id',
-            'user_id',
-            'type',
-        ];
+        'recipe_id',
+        'user_id',
+        'type',
+    ];
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    public function recipe()
+    {
+        return $this->belongsTo(Recipe::class);
+    }
 }

@@ -6,8 +6,12 @@ $user = auth()->user();
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', 'ResepKita')</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+    @if(request()->routeIs('dashboard') || request()->routeIs('profile'))
+        @vite(['resources/js/dashboard.js'])
+    @endif
 </head>
 <body class="bg-gray-100 min-h-screen flex flex-col font-sans text-gray-800">
 
@@ -19,16 +23,17 @@ $user = auth()->user();
             </a>
             <nav class="space-x-4">
                 @auth
-                    <div class="flex items-center gap-2">
-                        <a href="/profile" class="flex items-center gap-2 px-3 py-1 hover:bg-gray-200 hover:rounded-md transition-all">
+                    <div class="flex items-center">
+                        <span class="font-semibold">Mau masak apa hari ini?</span>
+                        <a href="/profile" class="flex items-center gap-2 pl-2 pr-3 py-1 hover:bg-gray-200 hover:rounded-md transition-all">
+                            <span class="font-semibold">{{ $user ? $user->name : '' }}</span>
                             @if($user && $user->photo_path)
-                            <img src="{{ asset('storage/' . $user->photo_path) }}" alt="Foto Profil" class="w-8 h-8 rounded-full object-cover border border-gray-300">
+                            <img src="{{ asset('storage/' . $user->photo_path) }}" alt="Foto Profil" class="w-9 h-9 rounded-full object-cover border border-gray-300">
                             @else
-                            <span class="w-8 h-8 rounded-full bg-gray-400 font-bold text-gray-600 flex items-center justify-center">
+                            <span class="w-9 h-9 rounded-full bg-gray-400 font-bold text-gray-600 flex items-center justify-center">
                                 {{ $user ? strtoupper(substr($user->name,0,1)) : '' }}
                             </span>
                             @endif
-                            <span class="font-semibold">Hai, {{ $user ? $user->name : '' }} !</span>
                         </a>
                     </div>
                 @else   
