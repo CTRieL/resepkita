@@ -127,8 +127,9 @@ class RecipeController extends Controller
             abort(403, 'Unauthorized');
         }
 
-        // Hapus semua like resep ini
+        // Hapus semua like & comment resep ini
         $recipe->likes()->delete();
+        $recipe->comments()->delete();
 
         // Hapus foto jika ada
         if ($recipe->photo_path && Storage::disk('public')->exists($recipe->photo_path)) {

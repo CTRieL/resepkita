@@ -14,8 +14,8 @@ class CommentSeeder extends Seeder
         $recipes = Recipe::all();
 
         foreach ($users as $user) {
-            // setiap user akan like 20 resep secara acak
-            $recipes->random(20)->each(function ($recipe) use ($user) {
+            // setiap user akan comment 20 resep secara acak
+            $recipes->random(rand(1, 25))->each(function ($recipe) use ($user) {
                 Comment::updateOrCreate(
                     ['user_id' => $user->id, 'recipe_id' => $recipe->id],
                     ['message' => fake()->sentence(fake()->numberBetween(2, 16))]

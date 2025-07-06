@@ -156,11 +156,11 @@ use Carbon\Carbon;
 @section('popup')
     <div id="delete-popup" class="bg-white rounded-xl shadow-lg p-6 max-w-sm mx-auto flex flex-col items-center gap-4" style="display:none;">
         <h3 class="font-bold text-lg text-danger">Hapus Resep?</h3>
-        <p class="text-gray-700 text-center">Yakin ingin menghapus resep <span class="font-semibold" id="delete-recipe-title"></span>?</p>
+        <p class="text-gray-700">Yakin ingin menghapus resep <span class="font-semibold" id="delete-recipe-title"></span>?</p>
         <form id="delete-form" method="POST" action="">
             @csrf
             @method('DELETE')
-            <div class="flex gap-2 mt-4">
+            <div class="flex gap-2 mt-4 justify-end">
                 <button type="button" onclick="hidePopup()" class="px-4 py-2 rounded bg-gray-200 hover:bg-gray-300">Batal</button>
                 <button type="submit" class="px-4 py-2 rounded bg-danger text-white hover:bg-danger/90">Hapus</button>
             </div>

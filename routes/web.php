@@ -21,7 +21,6 @@ Route::middleware('auth')->group(function () {
         return view('home');
     });
 
-
     Route::resource('/recipe', RecipeController::class);
     Route::post('/recipe/{recipe}/comment', [CommentController::class, 'store'])->name('comment.store');
 

@@ -34,13 +34,13 @@
 
 @section('popup')
     <div id="delete-popup" class="hidden">
-        <div class="bg-white rounded-lg shadow-lg p-8 min-w-[320px] relative flex flex-col items-center">
+        <div class="bg-white rounded-lg shadow-lg p-8 min-w-[320px] max-w-[480px] relative flex flex-col items-center">
             <h2 class="text-xl font-bold mb-4 text-danger">Konfirmasi Hapus</h2>
-            <p class="mb-6 text-center">Yakin ingin menghapus resep <span id="delete-recipe-title" class="font-semibold"></span>?</p>
+            <p class="mb-6">Yakin ingin menghapus resep <span id="delete-recipe-title" class="font-semibold"></span>?</p>
             <form id="delete-form" method="POST" action="" class="w-full flex flex-col items-center gap-2">
                 @csrf
                 @method('DELETE')
-                <div class="flex gap-4 justify-end mt-2">
+                <div class="flex flex-row w-full gap-4 justify-end mt-2">
                     <button type="button" onclick="hideDeletePopup()" class="px-4 py-2 border-[2px] border-gray-400 text-gray-500 rounded-lg hover:bg-gray-200">Batal</button>
                     <button type="submit" class="px-4 py-2 bg-danger text-white rounded-lg hover:bg-danger/80">Hapus</button>
                 </div>
