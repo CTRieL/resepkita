@@ -18,8 +18,9 @@ $user = auth()->user();
     {{-- Header --}}
     <header class="bg-white shadow-md">
         <div class="container mx-auto px-4 py-4 flex justify-between items-center">
-            <a href="/dashboard">
-                <h1 class="text-2xl font-bold text-primary transition-all duration-200 hover:scale-105 hover:drop-shadow-[0_0_12px_#10b981A0]">ResepKita</h1>
+            <a href="/dashboard" class="flex flex-row items-center duration-200 hover:scale-105 hover:drop-shadow-[0_0_12px_#10F3C178]">
+                <img src="/images/favicon.png" alt="" class="w-12 h-12">
+                <h1 class="text-2xl font-bold text-primary transition-all">ResepKita</h1>
             </a>
             <nav class="space-x-4">
                 @auth

@@ -46,9 +46,18 @@ class User extends Authenticatable
         ];
     }
 
-    // Relationship: a user has many likes
     public function likes()
     {
         return $this->hasMany(Like::class);
+    }
+
+    public function recipes()
+    {
+        return $this->hasMany(Recipe::class);
+    }
+
+    public function comments()
+    {
+        return $this->hasMany(Comment::class);
     }
 }

@@ -42,4 +42,41 @@ if (dropArea && fileInput && preview) {
         };
         reader.readAsDataURL(file);
     }
+
+    // Like button AJAX
+    document.querySelectorAll('.like-btn').forEach(btn => {
+        
+        btn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            e.preventDefault();
+            const recipeId = this.dataset.recipeId;
+            const type = this.dataset.type;
+            fetch(`/recipe/${recipeId}/like`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                },
+                body: JSON.stringify({ type })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    // Update all like counts
+                    ['thumbs_up','love','tasty'].forEach(t => {
+                        const countSpan = document.querySelector(`#like-count-${t}-${recipeId}`);
+                        if (countSpan && data.like_counts && typeof data.like_counts[t] !== 'undefined') {
+                            countSpan.textContent = data.like_counts[t];
+                        }
+                    });
+                    // Update button states
+                    document.querySelectorAll(`.like-btn[data-recipe-id='${recipeId}']`).forEach(b => {
+                        const isLiked = b.dataset.type === data.liked_type;
+                        b.classList.toggle('liked', isLiked);
+                    });
+                }
+            });
+        });
+    });
 }

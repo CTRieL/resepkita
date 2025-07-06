@@ -1,7 +1,3 @@
-<?php 
-$user = auth()->user() 
-?>
-
 @extends('layouts.app')
 
 @section('title', 'Dashboard')
@@ -19,24 +15,55 @@ $user = auth()->user()
             <div class="text-center flex flex-col gap-3 bg-white shadow-md rounded-lg p-4">
                 <div class="relative w-full aspect-square max-w-64 max-h-64 mx-auto group">
                     @if($user && $user->photo_path)
-                        <img src="{{ asset('storage/' . $user->photo_path) }}" alt="Foto Profil" class="w-full h-full aspect-square rounded-lg object-cover border border-gray-300 cursor-pointer">
+                        <img src="{{ asset('storage/' . $user->photo_path) }}" alt="Foto Profil" class="w-full h-full aspect-square rounded-lg object-cover border border-gray-300">
                     @else
-                        <span class="w-full h-full aspect-square rounded-lg bg-gray-400 font-bold text-[100px] p-0 text-gray-600 flex items-center justify-center cursor-pointer select-none">
+                        <span class="w-full h-full aspect-square rounded-lg bg-gray-400 font-bold text-[100px] p-0 text-gray-600 flex items-center justify-center select-none">
                             {{ $user ? strtoupper(substr($user->name,0,1)) : '' }}
                         </span>
                     @endif
-                    <button type="button" onclick="showEditPhotoPopup()" class="absolute inset-0 flex flex-col items-center justify-center bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg">
-                        <svg xmlns="http://www.w3.org/2000/svg" height="48px" viewBox="0 -960 960 960" width="48px" fill="#FFFFFF"><path d="M480-480ZM200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h320v80H200v560h560v-320h80v320q0 33-23.5 56.5T760-120H200Zm40-160h480L570-480 450-320l-90-120-120 160Zm440-320v-80h-80v-80h80v-80h80v80h80v80h-80v80h-80Z"/></svg>
-                        <span class="text-white text-lg font-semibold">Ubah Foto Profil</span>
-                    </button>
+
+                    @if($user == auth()->user())
+                        <button type="button" onclick="showEditPhotoPopup()" class="absolute inset-0 flex flex-col items-center justify-center bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg">
+                            <svg xmlns="http://www.w3.org/2000/svg" height="64px" viewBox="0 -960 960 960" width="64px" fill="#FFFFFF   "><path d="M480-480ZM200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h320v80H200v560h560v-320h80v320q0 33-23.5 56.5T760-120H200Zm40-160h480L570-480 450-320l-90-120-120 160Zm440-320v-80h-80v-80h80v-80h80v80h80v80h-80v80h-80Z"/></svg>
+                            <span class="text-white text-lg font-semibold">Ubah Foto Profil</span>
+                        </button>
+                    @endif
                 </div>
-                <label class="font-bold text-2xl text-gray-800 ">{{ $user['name'] }}</label>
-                <form method="POST" action="{{ route('logout') }}" class="mt-10">
-                    @csrf
-                    <button type="submit" class="text-base text-danger w-full h-10 bg-danger/5 border-[1px] border-danger text-center rounded-xl hover:bg-danger/10 active:border-[2px]">
-                        Logout
-                    </button>
-                </form>
+                <label class="font-bold text-2xl text-gray-800 ">{{ $user->name }}</label>
+                
+                <div class="text-lg font-bold text-gray-800 mt-1 flex justify-center flex-row w-full gap-3">
+                    <span>{{ $user->recipes()->count() }} <span class=" font-normal">Resep</span></span>
+                    <span>{{ $user->comments()->count() }} <span class=" font-normal">Kommentar</span></span>
+                </div>
+
+                {{-- history kommen --}}
+                <div class="mt-1">
+                    @if($user->comments()->count() > 0)
+                        <div class="text-sm text-gray-700 list-disc ml-4 flex flex-col gap-2">
+                            <span class="text-sm text-gray-500 font-semibold">Komentar terakhir:</span>
+                            <hr>
+                            @foreach($user->comments()->latest()->take(3)->get() as $komentar)
+                                @php $recipe = $komentar->recipe; @endphp
+                                <p class="w-full text-left">
+                                    Pada resep
+                                    <a href="{{ route('recipe.show', $recipe?->id) }}" class="text-accent hover:underline">
+                                        {{ $recipe?->title }}
+                                    </a>
+                                    berkomentar "{{ $komentar->message }}"
+                                </p>
+                                <hr>
+                            @endforeach
+                        </div>
+                    @endif
+                </div>
+                @if($isOwnProfile)
+                    <form method="POST" action="{{ route('logout') }}" class="mt-10">
+                        @csrf
+                        <button type="submit" class="text-base text-danger w-full h-10 bg-danger/5 border-[1px] border-danger text-center rounded-xl hover:bg-danger/10 active:border-[2px]">
+                            Logout
+                        </button>
+                    </form>
+                @endif
             </div>
         </div>
 
@@ -44,27 +71,34 @@ $user = auth()->user()
         <div class="col-span-3 flex flex-col gap-4">
 
             @if($userRecipes && $userRecipes->isNotEmpty())
-                <h2 class="text-gray-600 font text-lg">Resep {{ Auth::user()->name }}:</h2>
+                <h2 class="text-gray-600 font text-lg">Resep {{ $user->name }}:</h2>
+
+                @if($isOwnProfile)
                 <button onclick="window.location.href='{{ route('recipe.create') }}'" class="w-full h-[80px] flex items-center justify-center rounded-xl border-[2px] border-dashed border-primary text-primary hover:bg-primary/5 active:bg-primary/10">
-                    <svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="currentColor"><path d="M440-120v-320H120v-80h320v-320h80v320h320v80H520v320h-80Z"/></svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="http://www.w3.org/2000/svg" width="20px" fill="currentColor"><path d="M440-120v-320H120v-80h320v-320h80v320h320v80H520v320h-80Z"/></svg>
                     <p class="font-semibold text-lg"> Upload Resep</p>
                 </button>
-                
+                @endif
+
                 <div id="recipe-container" class="w-full flex flex-col gap-4 mt-2">
                     @foreach($userRecipes as $recipe)
                         <x-recipe.card :recipe="$recipe" />
                     @endforeach
                 </div>
+
                 @if($userRecipes instanceof \Illuminate\Pagination\LengthAwarePaginator && $userRecipes->hasMorePages())
                     <input type="hidden" id="next-page-url" value="{{ $userRecipes->nextPageUrl() }}">
                 @endif
-
+            
             @else
                 <p class="w-full text-center text-gray-600 text-lg">Kamu belum pernah buat resep nih. Ayo buat sekarang!</p>
-                <button onclick="window.location.href='{{ route('recipe.create') }}'" class="w-full h-[80px] flex items-center justify-center rounded-xl border-[2px] border-dashed border-primary text-primary hover:bg-primary/5 active:bg-primary/10">
-                    <svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="currentColor"><path d="M440-120v-320H120v-80h320v-320h80v320h320v80H520v320h-80Z"/></svg>
-                    <p class="font-semibold text-lg"> Upload Resep</p>
-                </button>
+                
+                @if($isOwnProfile)
+                    <button onclick="window.location.href='{{ route('recipe.create') }}'" class="w-full h-[80px] flex items-center justify-center rounded-xl border-[2px] border-dashed border-primary text-primary hover:bg-primary/5 active:bg-primary/10">
+                        <svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="http://www.w3.org/2000/svg" width="20px" fill="currentColor"><path d="M440-120v-320H120v-80h320v-320h80v320h320v80H520v320h-80Z"/></svg>
+                        <p class="font-semibold text-lg"> Upload Resep</p>
+                    </button>
+                @endif
             @endif
         </div>
     </div>
@@ -74,8 +108,10 @@ $user = auth()->user()
 @section('popup')
 <div id="delete-popup">
     <form id="delete-form" method="POST" action="" class="bg-white rounded-lg shadow-lg p-8 min-w-[320px] flex flex-col items-center">
+        
         <h2 class="text-xl font-bold mb-4 text-danger">Konfirmasi Hapus</h2>
         <p class="mb-6 text-center">Yakin ingin menghapus resep <span id="delete-recipe-title" class="font-semibold"></span>?</p>
+        
         @csrf
         @method('DELETE')
         <div class="flex gap-4 justify-center mt-2">
@@ -84,19 +120,23 @@ $user = auth()->user()
         </div>
     </form>
 </div>
+
 <div id="popup-ubah-foto">
     <form method="POST" action="{{ route('profile.photo') }}" enctype="multipart/form-data" class="bg-white rounded-lg shadow-lg p-8 min-w-[320px] relative mb-6">
         @csrf
         <h2 class="text-xl font-bold mb-4">Ubah Foto Profil</h2>
         <div class="col-span-full w-[400px]">
+
             <label for="cover-photo" class="block text-sm/6 text-gray-900">Masukkan foto profil yang baru</label>
             <div id="drop-area" class="mt-2 flex justify-center rounded-lg border border-dashed border-gray-900/25 px-6 py-10 transition-colors duration-200">
                 <div class="text-center">
+
                     <div id="photo-preview">
                         <svg class="mx-auto text-gray-300" height="80px" width="80px" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" data-slot="icon">
                             <path fill-rule="evenodd" d="M1.5 6a2.25 2.25 0 0 1 2.25-2.25h16.5A2.25 2.25 0 0 1 22.5 6v12a2.25 2.25 0 0 1-2.25 2.25H3.75A2.25 2.25 0 0 1 1.5 18V6ZM3 16.06V18c0 .414.336.75.75.75h16.5A.75.75 0 0 0 21 18v-1.94l-2.69-2.689a1.5 1.5 0 0 0-2.12 0l-.88.879.97.97a.75.75 0 1 1-1.06 1.06l-5.16-5.159a1.5 1.5 0 0 0-2.12 0L3 16.061Zm10.125-7.81a1.125 1.125 0 1 1 2.25 0 1.125 1.125 0 0 1-2.25 0Z" clip-rule="evenodd" />
                         </svg>
                     </div>
+
                     <div class="mt-4 flex text-sm/6 text-gray-600 justify-center flex-col">
                         <div class="mt-4 flex justify-center items-center text-sm/6 text-gray-600">
                             <label for="file-upload" class="relative cursor-pointer rounded-md bg-white font-semibold text-primary focus-within:ring-2 focus-within:ring-primaryS-600 focus-within:ring-offset-2 focus-within:outline-hidden hover:text-primaryS-500">

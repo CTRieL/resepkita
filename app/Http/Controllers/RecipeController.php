@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Comment;
 use App\Models\Recipe;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
@@ -63,7 +64,11 @@ class RecipeController extends Controller
      */
     public function show(Recipe $recipe)
     {
-        return view('recipe.show', compact('recipe'));
+        $comments = Comment::with('user')
+            ->where('recipe_id', $recipe->id)
+            ->latest()
+            ->paginate(10);
+        return view('recipe.show', compact('recipe', 'comments'));
     }
 
     /**

@@ -5,6 +5,8 @@
 @section('content')
 <div class="w-full flex justify-center items-center py-8">
     <div class="w-[90%] max-w-[1000px] flex flex-col justify-center items-center gap-4">
+        
+        {{-- Search bar --}}
         <form method="GET" action="{{ route('dashboard') }}" class="w-full flex gap-2 mb-2">
             <input type="text" name="q" value="{{ request('q') }}" placeholder="Cari judul resep atau bahan..." class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/30">
             <button type="submit" class="px-6 py-2 bg-primary text-white rounded-lg font-semibold hover:bg-primary/90 transition">Search</button>
@@ -13,6 +15,8 @@
             <svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="currentColor"><path d="M440-120v-320H120v-80h320v-320h80v320h320v80H520v320h-80Z"/></svg>
             <p class="font-semibold text-lg"> Upload Resep</p>
         </button>
+
+        {{-- resepnya --}}
         <div id="recipe-container" class="w-full flex flex-col gap-4 mt-6">
             @forelse($recipes as $recipe)
                 <x-recipe.card :recipe="$recipe" />
@@ -20,6 +24,7 @@
                 <p class="col-span-full text-center text-gray-500 text-lg">Tidak ada resep ditemukan.</p>
             @endforelse
         </div>
+
         @if($recipes->hasMorePages())
             <input type="hidden" id="next-page-url" value="{{ $recipes->nextPageUrl() }}">
         @endif

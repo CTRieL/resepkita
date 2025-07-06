@@ -3,8 +3,8 @@
 namespace Database\Seeders;
 
 use App\Models\User;
-// use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Storage;
 
 class DatabaseSeeder extends Seeder
 {
@@ -13,11 +13,16 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // User::factory(10)->create();
+        Storage::disk('public')->deleteDirectory('user_photos');
+        Storage::disk('public')->deleteDirectory('recipe_photos');
+        Storage::disk('public')->makeDirectory('user_photos');
+        Storage::disk('public')->makeDirectory('recipe_photos');
 
-        User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
+        $this->call([
+            UserSeeder::class,
+            RecipeSeeder::class,
+            CommentSeeder::class,
+            LikeSeeder::class,
         ]);
     }
 }

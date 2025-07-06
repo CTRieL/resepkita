@@ -34,16 +34,12 @@ class CommentController extends Controller
             'message' => 'required|string',
         ]);
         $comment = Comment::create([
-            'user_id' => Auth::user(),
+            'user_id' => Auth::id(),
             'recipe_id' => $recipeId,
-            'type' => $validated['message'],
+            'message' => $validated['message'],
         ]);
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Like berhasil ditambahkan!',
-            'comment' => $comment
-        ]);
+        return redirect()->back()->with('success', 'Komentar berhasil ditambahkan!');
     }
 
     /**

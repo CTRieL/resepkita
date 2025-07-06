@@ -37,7 +37,7 @@ use Carbon\Carbon;
                         </span>
                     @endif
                     <div class="flex flex-col">
-                        <span class="font-semibold text-base">{{ $recipe->user ? $recipe->user->name : '' }}</span>
+                        <a href="{{ route('profile.user',  $recipe->user) }}" class="font-semibold text-base hover:underline">{{ $recipe->user ? $recipe->user->name : '' }}</a>
                         <span class="text-gray-600 text-xs">{{ $recipe->created_at->format('j M Y H:i') }}</span>
                     </div>
                 </p>
@@ -73,30 +73,37 @@ use Carbon\Carbon;
                 </div>
             </div>
 
-            <div class="flex items-center gap-2 mt-4 text-primary justify-end">
+            {{-- popularity --}}
+            <div class="flex items-center gap-2 mt-1 text-primary justify-end z-10">
                 @php
+                    $user = auth()->user();
                     $likedType = $user ? $recipe->likedTypeByUser($user->id) : null;
                 @endphp
+
+                {{-- thumbs up --}}
                 <button class="like-btn flex flex-row gap-1 items-center transition px-2 py-1 rounded-full border border-primary/30 hover:bg-primary/10 focus:outline-none {{ $likedType === 'thumbs_up' ? 'liked bg-primary/10' : '' }}" data-recipe-id="{{ $recipe->id }}" data-type="thumbs_up" aria-label="Like Thumbs Up">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24" width="20" height="20"><path d="M2 21h4V9H2v12zM22 9c0-1.1-.9-2-2-2h-6.31l.95-4.57.03-.32c0-.41-.17-.79-.44-1.06L13.17 1 6.59 7.59C6.22 7.95 6 8.45 6 9v10c0 1.1.9 2 2 2h9c.83 0 1.54-.5 1.84-1.22l3.02-7.05c.09-.23.14-.47.14-.73v-1.91l-.01-.01L22 9z"/></svg>
                     <span id="like-count-thumbs_up-{{ $recipe->id }}" class="font-semibold">{{ $recipe->likeCount('thumbs_up') }}</span>
                 </button>
         
+                {{-- love --}}
                 <button class="like-btn text-danger/80 flex flex-row gap-1 items-center transition px-2 py-1 rounded-full border border-danger/30 hover:bg-danger/10 focus:outline-none {{ $likedType === 'love' ? 'liked bg-danger/10' : '' }}" data-recipe-id="{{ $recipe->id }}" data-type="love" aria-label="Like Love">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24" width="20" height="20"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41 0.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
                     <span id="like-count-love-{{ $recipe->id }}" class="font-semibold">{{ $recipe->likeCount('love') }}</span>
                 </button>
         
+                {{-- tasty --}}
                 <button class="like-btn text-accent flex flex-row gap-1 items-center transition px-2 py-1 rounded-full border border-accent/50 hover:bg-accent/20 focus:outline-none {{ $likedType === 'tasty' ? 'liked bg-accent/20' : '' }}" data-recipe-id="{{ $recipe->id }}" data-type="tasty" aria-label="Like Tasty">
                     <img src="{{ asset('images/tasty.png') }}" alt="" width="24" height="24">
                     <span id="like-count-tasty-{{ $recipe->id }}" class="font-semibold">{{ $recipe->likeCount('tasty') }}</span>
                 </button>
             </div>
 
+            {{-- Kolom komentar --}}
             <div id="comment-section" class="mt-8">
-                <h3 class="font-bold text-lg mb-2 text-gray-800">Komentar</h3>
+                <h3 class="font-semibold text-lg mb-2 text-gray-800">{{ $recipe->comments()->count() }} Komentar</h3>
                 @auth
-                <form id="comment-form" action="{{ route('recipe.comment.store', $recipe->id) }}" method="POST" class="flex gap-2 items-start mb-6">
+                <form id="comment-form" action="{{ route('comment.store', $recipe->id) }}" method="POST" class="flex gap-2 items-start mb-6">
                     @csrf
                     <div>
                         @if(auth()->user()->photo_path)
@@ -107,7 +114,7 @@ use Carbon\Carbon;
                             </span>
                         @endif
                     </div>
-                    <textarea name="message" rows="2" class="flex-1 border border-gray-300 rounded-lg px-3 py-2 focus:outline-primary resize-none" placeholder="Tulis komentar..." required></textarea>
+                    <textarea name="message" rows="1" class="flex-1 border border-gray-300 resize-y rounded-lg px-3 py-2 focus:outline-primary" placeholder="Tulis komentar..." required></textarea>
                     <button type="submit" class="bg-primary text-white px-4 py-2 rounded-lg hover:bg-primary/90 transition">Kirim</button>
                 </form>
                 @endauth
@@ -123,7 +130,12 @@ use Carbon\Carbon;
                                 </span>
                             @endif
                             <div class="flex flex-col bg-gray-100 rounded-xl px-4 py-2 min-w-0 w-full">
-                                <span class="font-semibold text-sm text-gray-800">{{ $comment->user ? $comment->user->name : 'User' }}</span>
+                                <div>
+                                    <a href="{{ route('profile.user', $comment->user) }}" class="font-semibold text-sm text-gray-800  hover:underline">
+                                        {{ $comment->user ? $comment->user->name : 'User' }}
+                                    </a>
+                                    <span class="text-gray-500 text-xs">{{ $comment->created_at->diffForHumans(now(), false, false, 1) }}</span>
+                                </div>
                                 <span class="text-gray-700 text-sm break-words">{!! nl2br(e($comment->message)) !!}</span>
                             </div>
                         </div>
@@ -132,7 +144,7 @@ use Carbon\Carbon;
                     @endforelse
                 </div>
 
-                <div class="mt-4">
+                <div class="mt-2 mx-auto w-[25%]">
                     {{ $comments->links() }}
                 </div>
             </div>
@@ -167,4 +179,43 @@ use Carbon\Carbon;
         }
     </script>
 @endsection
+
+<script>
+    // Like button AJAX
+    document.querySelectorAll('.like-btn').forEach(btn => {
+        
+        btn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            e.preventDefault();
+            const recipeId = this.dataset.recipeId;
+            const type = this.dataset.type;
+            fetch(`/recipe/${recipeId}/like`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                },
+                body: JSON.stringify({ type })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    // Update all like counts
+                    ['thumbs_up','love','tasty'].forEach(t => {
+                        const countSpan = document.querySelector(`#like-count-${t}-${recipeId}`);
+                        if (countSpan && data.like_counts && typeof data.like_counts[t] !== 'undefined') {
+                            countSpan.textContent = data.like_counts[t];
+                        }
+                    });
+                    // Update button states
+                    document.querySelectorAll(`.like-btn[data-recipe-id='${recipeId}']`).forEach(b => {
+                        const isLiked = b.dataset.type === data.liked_type;
+                        b.classList.toggle('liked', isLiked);
+                    });
+                }
+            });
+        });
+    });
+</script>
 @endsection

@@ -61,14 +61,18 @@ class AuthController extends Controller
     }
 
     public function show() {
-        $userId = Auth::id();
-        $userRecipes = Recipe::where('user_id', $userId)->orderByDesc('created_at')->get();
-        return view('profile', compact('userRecipes'));
+        $user = Auth::user();
+        $userRecipes = Recipe::where('user_id', $user->id)->orderByDesc('created_at')->get();
+        $isOwnProfile = true;
+        return view('profile', compact('user', 'userRecipes', 'isOwnProfile'));
+    }
+
+    public function showUser(User $user) {
+        $userRecipes = Recipe::where('user_id', $user->id)->orderByDesc('created_at')->get();
+        $isOwnProfile = Auth::check() && Auth::id() == $user->id;
+        return view('profile', compact('user', 'userRecipes', 'isOwnProfile'));
     }
     
-    /**
-     * Update the user's photo.
-     */
     public function updatePhoto(Request $request)
     {
         $user = Auth::user();
